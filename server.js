@@ -4,7 +4,8 @@ const { message } = require("./lang/messages/en/en");
 const { getDate } = require("./modules/utils");
 const { appendToFile } = require("./modules/writeFile");
 const { readFromFile } = require("./modules/readFile");
-
+const path = require("path");
+const BASE_PATH = "./";
 const PORT = process.env.PORT || 8000;
 
 http
@@ -14,7 +15,7 @@ http
       const name = parsedUrl.query.name;
 
       if (!name) {
-        res.writeHead(400, { "Content-Type": "text/html" });
+        res.statusCode = 400;
         res.end(message.error);
         return;
       }
@@ -27,36 +28,36 @@ http
       const text = parsedUrl.query.text;
 
       if (!text) {
-        res.writeHead(400, { "Content-Type": "text/html" });
-        res.end(
-          message.writeError
-        );
+        res.statusCode = 400;
+        res.end(message.writeError);
         return;
       }
 
-      appendToFile(text, (err, successMessage) => {
+      appendToFile(filePath, queryString, (err, message) => {
         if (err) {
-          res.writeHead(500, { "Content-Type": "text/html" });
-          res.end("<p style='color: red;'>Error: Unable to write to file.</p>");
+          res.statusCode = 500;
+          res.end(err);
         } else {
-          res.writeHead(200, { "Content-Type": "text/html" });
-          res.end(`<p style="color: green;">${successMessage}</p>`);
+          res.statusCode = 200;
+          res.end(message);
         }
       });
-    } else if (pathname === "/lab3/readFile/file.txt") {
-      readFromFile((err, data) => {
-        if (err) {
-          res.writeHead(500, { "Content-Type": "text/html" });
-          res.end("<p style='color: red;'>Error: Unable to read file.</p>");
-        } else if (data.startsWith("404 Error")) {
-          res.writeHead(404, { "Content-Type": "text/html" });
-          res.end(`<p style='color: red;'>${data}</p>`);
-        } else {
-          res.writeHead(200, { "Content-Type": "text/html" });
-          res.end(`<pre>${data}</pre>`);
-        }
-      });
+    } else if (parsedUrl.pathname.startsWith("/lab3/readFile/")) {
+      const fileName = parsedUrl.pathname.split('/').pop();
+      const filePath = path.join(BASE_PATH, fileName);
+
+      readFromFile(filePath, (err, content) => {
+                if (err) {
+                    res.statusCode = 404;
+                    res.end(`File not found: ${fileName}`);
+                } else {
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'text/plain');
+                    res.end(content);
+                }
+            });
     } else {
+      res.statusCode = 404;
       res.writeHead(404, { "Content-Type": "text/html" });
       res.end(message[404]);
     }
