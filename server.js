@@ -34,7 +34,7 @@ http
       }
       const filePath = path.join(BASE_PATH, 'file.txt');
 
-      appendToFile(filePath, queryString, (err, message) => {
+      appendToFile(filePath, text, (err, message) => {
         if (err) {
           res.statusCode = 500;
           res.end(err);
