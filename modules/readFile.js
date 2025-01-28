@@ -1,14 +1,15 @@
 const fs = require("fs");
+const {message} = require('../lang/messages/en/en')
 
 function readFromFile(filePath, callback) {
   fs.exists(filePath, (exists) => {
     if (!exists) {
-      return callback("File not found");
+      return callback(message.fileNotFound);
     }
 
     fs.readFile(filePath, "utf8", (err, data) => {
       if (err) {
-        return callback("Error reading the file");
+        return callback(message.fileReadError);
       }
       callback(null, data);
     });
