@@ -32,6 +32,7 @@ http
         res.end(message.writeError);
         return;
       }
+      const filePath = path.join(BASE_PATH, 'file.txt');
 
       appendToFile(filePath, queryString, (err, message) => {
         if (err) {
