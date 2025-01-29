@@ -16,6 +16,7 @@ http
 
       if (!name) {
         res.statusCode = 400;
+        res.setHeader('Content-Type', 'text/html');
         res.end(message.error);
         return;
       }
@@ -37,9 +38,11 @@ http
       appendToFile(filePath, text, (err, message) => {
         if (err) {
           res.statusCode = 500;
+          res.setHeader('Content-Type', 'text/html');
           res.end(err);
         } else {
           res.statusCode = 200;
+          res.setHeader('Content-Type', 'text/html');
           res.end(message);
         }
       });
@@ -50,6 +53,7 @@ http
       readFromFile(filePath, (err, content) => {
                 if (err) {
                     res.statusCode = 404;
+                    res.setHeader('Content-Type', 'text/html');
                     res.end(`File not found: ${fileName}`);
                 } else {
                     res.statusCode = 200;
